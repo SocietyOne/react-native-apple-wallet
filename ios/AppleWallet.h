@@ -3,6 +3,4 @@
 
 @interface AppleWallet : NSObject <RCTBridgeModule>
 
-- (BOOL)canAddPaymentPass;
-
 @end

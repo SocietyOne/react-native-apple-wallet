@@ -1,32 +1,25 @@
 import * as React from 'react';
 
-import { StyleSheet, View, Text, Button } from 'react-native';
-import AppleWallet, { canAddPaymentPass } from 'react-native-apple-wallet';
+import { StyleSheet, View, Button } from 'react-native';
+import AppleWallet from 'react-native-apple-wallet';
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
+  const canAddPaymentPassOnPress = async () => {
+    const canAddPaymentPassResult = await AppleWallet.canAddPaymentPass();
+    console.log('AppleWallet.canAddPaymentPass JS : ', canAddPaymentPassResult);
+  };
 
-  React.useEffect(() => {
-    // AppleWallet.multiply(3, 7).then(setResult);
-  }, []);
-
-  const onPress = async () => {
-    // const result = await AppleWallet.multiply(3, 7).then(setResult);
-    // console.log('RESULT JS : ', result);
-    // AppleWallet.createCalendarEvent('Event name', 'Event Location');
-    const res = await AppleWallet.canAddPaymentPass();
-    console.log('RESULT JS : ', res);
+  const canAddPaymentPassWithPrimaryAccountIdentifierOnPress = async () => {
+    const canAddPaymentPassResult = await AppleWallet.canAddPaymentPass();
+    console.log('AppleWallet.canAddPaymentPass JS : ', canAddPaymentPassResult);
   };
 
   return (
     <View style={styles.container}>
-      {/*<Text>Test text</Text>*/}
-      <Text>Result: {result}</Text>
-
+      <Button title="canAddPaymentPass" onPress={canAddPaymentPassOnPress} />
       <Button
-        title="Click to invoke your native module!"
-        color="#841584"
-        onPress={onPress}
+        title="canAddPaymentPassWithPrimaryAccountIdentifier"
+        onPress={canAddPaymentPassWithPrimaryAccountIdentifierOnPress}
       />
     </View>
   );
