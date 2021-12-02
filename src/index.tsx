@@ -20,3 +20,16 @@ const AppleWallet = NativeModules.AppleWallet
 export function multiply(a: number, b: number): Promise<number> {
   return AppleWallet.multiply(a, b);
 }
+
+export function createCalendarEvent(
+  name: string,
+  location: string
+): Promise<number> {
+  return AppleWallet.createCalendarEvent(name, location);
+}
+
+export function canAddPaymentPass(): Promise<boolean> {
+  return AppleWallet.canAddPaymentPass();
+}
+
+export default AppleWallet;
