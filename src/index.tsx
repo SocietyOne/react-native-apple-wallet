@@ -5,6 +5,8 @@ const LINKING_ERROR =
   Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo managed workflow\n';
+const UNSUPPORTED_PLATFORM_ERROR =
+  'Unsupported platform. Only supported on iOS';
 
 const AppleWallet = NativeModules.AppleWallet
   ? NativeModules.AppleWallet
@@ -17,23 +19,35 @@ const AppleWallet = NativeModules.AppleWallet
       }
     );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return AppleWallet.multiply(a, b);
+function isIos() {
+  return Platform.OS === 'ios';
 }
 
 export function createCalendarEvent(
   name: string,
   location: string
 ): Promise<number> {
-  return AppleWallet.createCalendarEvent(name, location);
+  if (isIos()) {
+    return AppleWallet.createCalendarEvent(name, location);
+  }
+
+  return Promise.reject(UNSUPPORTED_PLATFORM_ERROR);
 }
 
 export function isAvailable(): Promise<boolean> {
-  return AppleWallet.isAvailable();
+  if (isIos()) {
+    return AppleWallet.isAvailable();
+  }
+
+  return Promise.reject(UNSUPPORTED_PLATFORM_ERROR);
 }
 
 export function canAddCard(cardId: string): Promise<boolean> {
-  return AppleWallet.canAddCard(cardId);
+  if (isIos()) {
+    return AppleWallet.canAddCard(cardId);
+  }
+
+  return Promise.reject(UNSUPPORTED_PLATFORM_ERROR);
 }
 
 export default AppleWallet;
