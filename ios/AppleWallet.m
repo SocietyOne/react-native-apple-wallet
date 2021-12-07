@@ -1,6 +1,7 @@
 #import "AppleWallet.h"
 #import <React/RCTLog.h>
 #import <PassKit/PassKit.h>
+#import "AppleWalletDefinitions.h"
 
 @implementation AppleWallet
 
@@ -21,23 +22,46 @@ RCT_EXPORT_MODULE()
     }
 }
 
-RCT_REMAP_METHOD(canAddPaymentPass,
+RCT_REMAP_METHOD(isAvailable,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
-    RCTLogInfo(@"NATIVE canAddPaymentPass");
     resolve(@([self canAddPaymentPass]));
 }
 
--(BOOL)canAddPaymentPassWithPrimaryAccountIdentifier
+-(BOOL)canAddPaymentPassWithPrimaryAccountIdentifier:(NSString *)cardId
 {
-    return false;
+    PKPassLibrary *library = [[PKPassLibrary alloc] init];
+    return [library canAddPaymentPassWithPrimaryAccountIdentifier:cardId];
 }
 
-RCT_EXPORT_METHOD(canAddPaymentPassWithPrimaryAccountIdentifier:(NSString *)primaryAccountIdentifier
+RCT_EXPORT_METHOD(canAddCard:(NSString *)cardId
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
-    RCTLogInfo(@"NATIVE canAddPaymentPassWithPrimaryAccountIdentifier %@", primaryAccountIdentifier);
-    resolve(@([self canAddPaymentPassWithPrimaryAccountIdentifier]));
+    RCTLogInfo(@"canAddCard %@", cardId);
+    resolve(@([self canAddPaymentPassWithPrimaryAccountIdentifier:cardId]));
+}
+
+RCT_EXPORT_METHOD(isCardInWallet:(NSString *)card
+    resolve:(RCTPromiseResolveBlock)resolve
+    reject:(RCTPromiseRejectBlock)reject) {
+
+    PKPassLibrary *library = [[PKPassLibrary alloc] init];
+    if (![library canAddPaymentPassWithPrimaryAccountIdentifier:card]) {
+        // If the card cannot be added to the wallet, there is no way we can find it there.
+        resolve(@NO);
+        return;
+    }
+    
+    NSArray* passes = [library passesOfType:PKPassTypePayment];
+    for (int i=0; i < [passes count]; i++) {
+        PKPaymentPass* pass = [passes objectAtIndex:i];
+        NSString* suffix = pass.primaryAccountNumberSuffix;
+        if ([suffix isEqualToString:card]) {
+            resolve(@YES);
+            return;
+        }
+    }
+    resolve(@NO);
 }
 
 @end

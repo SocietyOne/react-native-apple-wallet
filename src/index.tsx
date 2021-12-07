@@ -28,8 +28,12 @@ export function createCalendarEvent(
   return AppleWallet.createCalendarEvent(name, location);
 }
 
-export function canAddPaymentPass(): Promise<boolean> {
-  return AppleWallet.canAddPaymentPass();
+export function isAvailable(): Promise<boolean> {
+  return AppleWallet.isAvailable();
+}
+
+export function canAddCard(cardId: string): Promise<boolean> {
+  return AppleWallet.canAddCard(cardId);
 }
 
 export default AppleWallet;

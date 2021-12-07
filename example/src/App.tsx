@@ -1,25 +1,30 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Button } from 'react-native';
-import AppleWallet from 'react-native-apple-wallet';
+import { isAvailable, canAddCard } from 'react-native-apple-wallet';
 
 export default function App() {
-  const canAddPaymentPassOnPress = async () => {
-    const canAddPaymentPassResult = await AppleWallet.canAddPaymentPass();
-    console.log('AppleWallet.canAddPaymentPass JS : ', canAddPaymentPassResult);
+  const isAvailableOnPress = async () => {
+    const isAvailableResult = await isAvailable();
+    console.log('isAvailable :', isAvailableResult);
   };
 
-  const canAddPaymentPassWithPrimaryAccountIdentifierOnPress = async () => {
-    const canAddPaymentPassResult = await AppleWallet.canAddPaymentPass();
-    console.log('AppleWallet.canAddPaymentPass JS : ', canAddPaymentPassResult);
+  const canAddCardOnPress = async () => {
+    const canAddPaymentPassWithAccountIdResult = await canAddCard(
+      'test-card-id'
+    );
+    console.log(
+      'canAddPaymentPassWithAccountId :',
+      canAddPaymentPassWithAccountIdResult
+    );
   };
 
   return (
     <View style={styles.container}>
-      <Button title="canAddPaymentPass" onPress={canAddPaymentPassOnPress} />
+      <Button title="isAvailable" onPress={isAvailableOnPress} />
       <Button
-        title="canAddPaymentPassWithPrimaryAccountIdentifier"
-        onPress={canAddPaymentPassWithPrimaryAccountIdentifierOnPress}
+        title="canAddPaymentPassWithAccountId"
+        onPress={canAddCardOnPress}
       />
     </View>
   );
