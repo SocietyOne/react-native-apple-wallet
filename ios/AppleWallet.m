@@ -37,7 +37,6 @@ RCT_REMAP_METHOD(isAvailable,
 RCT_EXPORT_METHOD(canAddCard:(NSString *)cardId
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
-    RCTLogInfo(@"canAddCard %@", cardId);
     resolve(@([self canAddPaymentPassWithPrimaryAccountIdentifier:cardId]));
 }
 

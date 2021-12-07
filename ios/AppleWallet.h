@@ -4,7 +4,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTUtils.h>
 
-@interface AppleWallet : RCTEventEmitter <RCTBridgeModule>
+@interface AppleWallet : NSObject <RCTBridgeModule>
 
 @property (nonatomic, retain) NSString *cardholderName;
 @property (nonatomic, retain) NSString *localizedDescription;
