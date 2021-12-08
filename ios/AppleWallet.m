@@ -8,14 +8,9 @@
 // To export a module named AppleWallet
 RCT_EXPORT_MODULE()
 
-/*
- S1 Apple wallet
- */
-
 - (BOOL)canAddPaymentPass
 {
     if (@available(iOS 9.0, *)) {
-        //What is the required logic to do to know if the app can add cards to Apple Pay?
         return [PKAddPaymentPassViewController canAddPaymentPass];
     } else {
         return false;
@@ -31,7 +26,14 @@ RCT_REMAP_METHOD(isAvailable,
 -(BOOL)canAddPaymentPassWithPrimaryAccountIdentifier:(NSString *)cardId
 {
     PKPassLibrary *library = [[PKPassLibrary alloc] init];
-    return [library canAddPaymentPassWithPrimaryAccountIdentifier:cardId];
+    if (@available(iOS 13.4, *)) {
+        return [library canAddSecureElementPassWithPrimaryAccountIdentifier:cardId];
+    }
+    if (@available(iOS 9.0, *)) {
+        return [library canAddPaymentPassWithPrimaryAccountIdentifier:cardId];
+    } else {
+        return false;
+    }
 }
 
 RCT_EXPORT_METHOD(canAddCard:(NSString *)cardId

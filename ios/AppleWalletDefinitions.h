@@ -9,16 +9,4 @@
 #ifndef AppleWalletDefinitions_h
 #define AppleWalletDefinitions_h
 
-typedef enum {
-    kPKEncryptionSchemeECC_V2 = 0,
-} EncryptionScheme;
-
-typedef enum {
-    kPKPaymentNetworkAmex = 0,
-    kPKPaymentNetworkDiscover,
-    kPKPaymentNetworkMasterCard,
-    kPKPaymentNetworkPrivateLabel,
-    kPKPaymentNetworkVisa,
-} PaymentNetwork;
-
 #endif /* AppleWalletDefinitions_h */
