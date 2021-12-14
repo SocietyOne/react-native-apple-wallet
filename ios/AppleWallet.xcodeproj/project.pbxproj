@@ -21,6 +21,10 @@
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libAppleWallet.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAppleWallet.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		92E7E702275EF140007F0096 /* AppleWalletDefinitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppleWalletDefinitions.h; sourceTree = "<group>"; };
+		92E7E70A27606B39007F0096 /* SOAddPassButtonManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SOAddPassButtonManager.h; sourceTree = "<group>"; };
+		92E7E70B27606B39007F0096 /* SOAddPassButtonManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SOAddPassButtonManager.m; sourceTree = "<group>"; };
+		92E7E70D27606B73007F0096 /* SOAddPassButtonContainer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SOAddPassButtonContainer.h; sourceTree = "<group>"; };
+		92E7E70E27606B73007F0096 /* SOAddPassButtonContainer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SOAddPassButtonContainer.m; sourceTree = "<group>"; };
 		B3E7B5881CC2AC0600A0062D /* AppleWallet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppleWallet.h; sourceTree = "<group>"; };
 		B3E7B5891CC2AC0600A0062D /* AppleWallet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppleWallet.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -47,6 +51,10 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				92E7E70D27606B73007F0096 /* SOAddPassButtonContainer.h */,
+				92E7E70E27606B73007F0096 /* SOAddPassButtonContainer.m */,
+				92E7E70A27606B39007F0096 /* SOAddPassButtonManager.h */,
+				92E7E70B27606B39007F0096 /* SOAddPassButtonManager.m */,
 				92E7E702275EF140007F0096 /* AppleWalletDefinitions.h */,
 				B3E7B5881CC2AC0600A0062D /* AppleWallet.h */,
 				B3E7B5891CC2AC0600A0062D /* AppleWallet.m */,

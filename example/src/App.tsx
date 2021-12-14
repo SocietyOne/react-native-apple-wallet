@@ -1,7 +1,11 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Button } from 'react-native';
-import { isAvailable, canAddCard } from 'react-native-apple-wallet';
+import AppleWallet, {
+  isAvailable,
+  canAddCard,
+  AddPassButton,
+} from 'react-native-apple-wallet';
 
 export default function App() {
   const isAvailableOnPress = async () => {
@@ -20,13 +24,26 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
-      <Button title="isAvailable" onPress={isAvailableOnPress} />
-      <Button
-        title="canAddPaymentPassWithAccountId"
-        onPress={canAddCardOnPress}
-      />
-    </View>
+    <>
+      <View style={styles.container}>
+        <Button title="isAvailable" onPress={isAvailableOnPress} />
+        <Button
+          title="canAddPaymentPassWithAccountId"
+          onPress={canAddCardOnPress}
+        />
+      </View>
+      <View style={styles.addToWallet}>
+        <AddPassButton
+          style={{
+            height: AppleWallet.AddToWalletButtonHeight,
+            width: AppleWallet.AddToWalletButtonWidth,
+          }}
+          onPress={() => {
+            console.log('onPress pressed');
+          }}
+        />
+      </View>
+    </>
   );
 }
 
@@ -35,10 +52,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'cyan',
   },
-  box: {
-    width: 60,
-    height: 60,
+  addToWallet: {
+    alignItems: 'center',
+    justifyContent: 'center',
     marginVertical: 20,
   },
 });

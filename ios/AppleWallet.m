@@ -37,15 +37,15 @@ RCT_REMAP_METHOD(isAvailable,
 }
 
 RCT_EXPORT_METHOD(canAddCard:(NSString *)cardId
-                 resolver:(RCTPromiseResolveBlock)resolve
-                 rejecter:(RCTPromiseRejectBlock)reject) {
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
     resolve(@([self canAddPaymentPassWithPrimaryAccountIdentifier:cardId]));
 }
 
 RCT_EXPORT_METHOD(isCardInWallet:(NSString *)card
-    resolve:(RCTPromiseResolveBlock)resolve
-    reject:(RCTPromiseRejectBlock)reject) {
-
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    
     PKPassLibrary *library = [[PKPassLibrary alloc] init];
     if (![library canAddPaymentPassWithPrimaryAccountIdentifier:card]) {
         // If the card cannot be added to the wallet, there is no way we can find it there.
@@ -63,6 +63,16 @@ RCT_EXPORT_METHOD(isCardInWallet:(NSString *)card
         }
     }
     resolve(@NO);
+}
+
+- (NSDictionary *)constantsToExport {
+    PKAddPassButton *addPassButton = [[PKAddPassButton alloc] initWithAddPassButtonStyle:PKAddPassButtonStyleBlack];
+    [addPassButton layoutIfNeeded];
+    
+    return @{
+        @"AddToWalletButtonWidth": @(CGRectGetWidth(addPassButton.frame)),
+        @"AddToWalletButtonHeight": @(CGRectGetHeight(addPassButton.frame)),
+    };
 }
 
 @end
