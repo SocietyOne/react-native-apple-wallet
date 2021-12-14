@@ -5,6 +5,7 @@ import AppleWallet, {
   isAvailable,
   canAddCard,
   AddPassButton,
+  isCardInWallet,
 } from 'react-native-apple-wallet';
 
 export default function App() {
@@ -23,6 +24,11 @@ export default function App() {
     );
   };
 
+  const isCardInWalletOnPress = async () => {
+    const isCardInWalletResult = await isCardInWallet('test-card-id');
+    console.log('isCardInWallet :', isCardInWalletResult);
+  };
+
   return (
     <>
       <View style={styles.container}>
@@ -31,6 +37,7 @@ export default function App() {
           title="canAddPaymentPassWithAccountId"
           onPress={canAddCardOnPress}
         />
+        <Button title="isCardInWallet" onPress={isCardInWalletOnPress} />
       </View>
       <View style={styles.addToWallet}>
         <AddPassButton

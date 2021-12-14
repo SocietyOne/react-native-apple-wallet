@@ -71,4 +71,12 @@ export function canAddCard(cardId: string): Promise<boolean> {
   return Promise.reject(UNSUPPORTED_PLATFORM_ERROR);
 }
 
+export function isCardInWallet(cardId: string): Promise<boolean> {
+  if (isIos()) {
+    return AppleWallet.isCardInWallet(cardId);
+  }
+
+  return Promise.reject(UNSUPPORTED_PLATFORM_ERROR);
+}
+
 export default AppleWallet;
