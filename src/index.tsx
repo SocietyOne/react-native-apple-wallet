@@ -1,4 +1,10 @@
-import { NativeModules, Platform, requireNativeComponent } from 'react-native';
+import React from 'react';
+import {
+  NativeModules,
+  Platform,
+  requireNativeComponent,
+  ViewStyle,
+} from 'react-native';
 
 const LINKING_ERROR =
   `The package 'react-native-apple-wallet' doesn't seem to be linked. Make sure: \n\n` +
@@ -23,7 +29,16 @@ const AppleWallet = NativeModules.AppleWallet
   requireNativeComponent automatically resolves 'SOAddPassButton' to 'SOAddPassButtonManager'
   Reference : https://reactnative.dev/docs/native-components-ios
  */
-export const AddPassButton = requireNativeComponent('SOAddPassButton');
+const SOAddPassButton = requireNativeComponent('SOAddPassButton');
+
+export class AddPassButton extends React.Component<{
+  style: ViewStyle;
+  onPress: () => void;
+}> {
+  render() {
+    return <SOAddPassButton {...this.props} />;
+  }
+}
 
 function isIos() {
   return Platform.OS === 'ios';
