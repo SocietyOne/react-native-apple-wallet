@@ -46,7 +46,14 @@ export default function App() {
             width: AppleWallet.AddToWalletButtonWidth,
           }}
           onPress={() => {
-            console.log('onPress pressed');
+            AppleWallet.presentAddPaymentPassViewController({
+              apiEndpoint: 'http://10xapi',
+              cardholderName: 'Sha Gunasekara',
+              localizedDescription: 'Something here',
+              primaryAccountSuffix: '3543',
+              primaryAccountIdentifier: '',
+              authorization: 'Bearer AiZlAPCLRMOhNE299bKzdg',
+            });
           }}
         />
       </View>
