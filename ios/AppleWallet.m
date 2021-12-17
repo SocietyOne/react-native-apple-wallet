@@ -46,14 +46,14 @@ RCT_EXPORT_METHOD(canAddCard:(NSString *)cardId
 RCT_EXPORT_METHOD(isCardInWallet:(NSString *)card
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
-
+    
     PKPassLibrary *library = [[PKPassLibrary alloc] init];
     if (![library canAddPaymentPassWithPrimaryAccountIdentifier:card]) {
         // If the card cannot be added to the wallet, there is no way we can find it there.
         resolve(@NO);
         return;
     }
-
+    
     NSArray* passes = [library passesOfType:PKPassTypePayment];
     for (int i=0; i < [passes count]; i++) {
         PKPaymentPass* pass = [passes objectAtIndex:i];
@@ -69,7 +69,7 @@ RCT_EXPORT_METHOD(isCardInWallet:(NSString *)card
 - (NSDictionary *)constantsToExport {
     PKAddPassButton *addPassButton = [[PKAddPassButton alloc] initWithAddPassButtonStyle:PKAddPassButtonStyleBlack];
     [addPassButton layoutIfNeeded];
-
+    
     return @{
         @"AddToWalletButtonWidth": @(CGRectGetWidth(addPassButton.frame)),
         @"AddToWalletButtonHeight": @(CGRectGetHeight(addPassButton.frame)),
@@ -96,9 +96,9 @@ RCT_EXPORT_METHOD(isCardInWallet:(NSString *)card
 RCT_EXPORT_METHOD(presentAddPaymentPassViewController: (NSDictionary *)args
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-
+    
     PKAddPaymentPassRequestConfiguration *configuration = [[PKAddPaymentPassRequestConfiguration alloc] initWithEncryptionScheme:PKEncryptionSchemeECC_V2];
-
+    
     self.cardholderName = args[@"cardholderName"];
     self.localizedDescription = args[@"localizedDescription"];
     self.paymentNetwork = PKPaymentNetworkMasterCard;
@@ -106,23 +106,23 @@ RCT_EXPORT_METHOD(presentAddPaymentPassViewController: (NSDictionary *)args
     self.primaryAccountIdentifier = args[@"primaryAccountIdentifier"];
     self.apiEndpoint = args[@"apiEndpoint"];
     self.authorization = args[@"authorization"];
-
+    
     configuration.cardholderName = self.cardholderName;
     configuration.localizedDescription = self.localizedDescription;
     configuration.paymentNetwork = self.paymentNetwork;
     configuration.primaryAccountSuffix = self.primaryAccountSuffix;
     configuration.primaryAccountIdentifier = self.primaryAccountIdentifier;
-
+    
     PKAddPaymentPassViewController *passView = [[PKAddPaymentPassViewController alloc] initWithRequestConfiguration:configuration
                                                                                                            delegate:self];
     if (passView != nil) {
         dispatch_async(dispatch_get_main_queue(), ^{
             UIApplication *sharedApplication = RCTSharedApplication();
             UIWindow *window = sharedApplication.keyWindow;
-
+            
             if (window) {
                 UIViewController *rootViewController = window.rootViewController;
-
+                
                 if (rootViewController) {
                     [rootViewController presentViewController:passView animated:YES completion:^{
                         // Succeeded
@@ -132,7 +132,7 @@ RCT_EXPORT_METHOD(presentAddPaymentPassViewController: (NSDictionary *)args
                         resolve(nil);
                         return;
                     }];
-
+                    
                 }
             }
         });
@@ -147,14 +147,55 @@ RCT_EXPORT_METHOD(presentAddPaymentPassViewController: (NSDictionary *)args
 
 - (void)addPaymentPassViewController:(nonnull PKAddPaymentPassViewController *)controller generateRequestWithCertificateChain:(nonnull NSArray<NSData *> *)certificates nonce:(nonnull NSData *)nonce nonceSignature:(nonnull NSData *)nonceSignature completionHandler:(nonnull void (^)(PKAddPaymentPassRequest * _Nonnull))handler {
     NSLog(@"[INFO] addPaymentPassViewController 1");
-
+    
     NSString* leafCertificate = [[certificates objectAtIndex:0] base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn];
     NSString* subCACertificate = [[certificates objectAtIndex:1] base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn];
+    
+    NSURL *apiEndpointURL = [NSURL URLWithString:self.apiEndpoint];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:apiEndpointURL];
+    request.HTTPMethod = @"POST";
+    request.timeoutInterval = 19.0;
+    
+    [request setAllHTTPHeaderFields:@{
+        @"content-type" : @"application/json",
+        @"authorization" : self.authorization,
+    }];
+    
+    NSURLSession *session = [NSURLSession sharedSession];
+        NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request
+            completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+
+                NSLog(@"[INFO] addPaymentPassViewController 3");
+                NSLog(@"error: %@", error);
+                NSLog(@"data: %@", data);
+                NSLog(@"response: %@", response);
+
+                NSError *processError = error;
+
+                if (processError == nil && data != nil) {
+                    NSLog(@"No Error?");
+                }
+
+                // This will only be reached if no return above. This means an error occured.
+                handler(nil);
+                if (processError != nil) {
+                    [self sendEventWithName:@"addingPassFailed" body:@{
+                                            @"code" : @([processError code]),
+                                            @"message" : [processError localizedDescription],
+                                            }];
+
+                } else {
+
+                    [self sendEventWithName:@"addingPassFailed" body:nil];
+                }
+            }];
+
+        [dataTask resume];
 }
 
 - (void)addPaymentPassViewController:(nonnull PKAddPaymentPassViewController *)controller didFinishAddingPaymentPass:(nullable PKPaymentPass *)pass error:(nullable NSError *)error {
     NSLog(@"pass: %@ | error: %@", pass, error);
-
+    
     if (pass != nil) {
         [self sendEventWithName:@"addingPassSucceeded" body:nil];
     } else {
@@ -163,12 +204,12 @@ RCT_EXPORT_METHOD(presentAddPaymentPassViewController: (NSDictionary *)args
                 @"code" : @([error code]),
                 @"message" : [error localizedDescription],
             }];
-
+            
         } else {
             [self sendEventWithName:@"addingPassFailed" body:nil];
         }
     }
-
+    
     [controller dismissViewControllerAnimated:YES
                                    completion:^() {
         // should controller be released here

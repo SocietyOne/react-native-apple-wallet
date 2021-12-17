@@ -47,12 +47,15 @@ export default function App() {
           }}
           onPress={() => {
             AppleWallet.presentAddPaymentPassViewController({
-              apiEndpoint: 'http://10xapi',
-              cardholderName: 'Sha Gunasekara',
+              apiEndpoint:
+                'https://e2e.venus.tenx-platform.com/v3/cards/fcde0f94-d599-4945-8df9-0d5dd9e16ec9/wallets/applePay/requests',
+              cardholderName: 'Happy Trails',
               localizedDescription: 'Something here',
-              primaryAccountSuffix: '3543',
+              primaryAccountSuffix: '5435',
               primaryAccountIdentifier: '',
-              authorization: 'Bearer AiZlAPCLRMOhNE299bKzdg',
+              authorization:
+                'Bearer ffSG7YiItxVU03DmuwuBLdSxCIQ.92OeF3kvoU3xzJKXnBl2u-BIwaE',
+              xApiKey: 'ZfAyosUQIUosKeJAb04HSjeGoLjPEf5a',
             });
           }}
         />
