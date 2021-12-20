@@ -4,6 +4,7 @@ import {
   Platform,
   requireNativeComponent,
   ViewStyle,
+  NativeEventEmitter,
 } from 'react-native';
 
 const LINKING_ERROR =
@@ -24,6 +25,7 @@ const AppleWallet = NativeModules.AppleWallet
         },
       }
     );
+const nativeEventEmitter = new NativeEventEmitter(AppleWallet);
 
 /*
   requireNativeComponent automatically resolves 'SOAddPassButton' to 'SOAddPassButtonManager'
@@ -79,4 +81,30 @@ export function isCardInWallet(cardId: string): Promise<boolean> {
   return Promise.reject(UNSUPPORTED_PLATFORM_ERROR);
 }
 
-export default AppleWallet;
+// export function addEventListener(
+//   eventType: string,
+//   listener: (...args: any[]) => void
+// ) {
+//   return nativeEventEmitter.addListener(eventType, listener, null);
+// }
+//
+// export function removeEventListener(
+//   eventType: string,
+//   listener: (...args: any[]) => void
+// ): void {
+//   return nativeEventEmitter.removeListener(eventType, listener);
+// }
+
+export default {
+  ...AppleWallet,
+
+  addEventListener: (eventType: string, listener: (...args: any[]) => void) =>
+    nativeEventEmitter.addListener(eventType, listener, null),
+
+  removeEventListener: (
+    eventType: string,
+    listener: (...args: any[]) => void
+  ): void => {
+    nativeEventEmitter.removeListener(eventType, listener);
+  },
+};

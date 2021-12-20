@@ -7,6 +7,7 @@ import AppleWallet, {
   AddPassButton,
   isCardInWallet,
 } from 'react-native-apple-wallet';
+import { useEffect } from 'react';
 
 export default function App() {
   const isAvailableOnPress = async () => {
@@ -29,6 +30,17 @@ export default function App() {
     console.log('isCardInWallet :', isCardInWalletResult);
   };
 
+  useEffect(() => {
+    const event = ({ args }: any) => {
+      console.log('YIPEE ', JSON.stringify(args));
+    };
+    AppleWallet.addEventListener('generatedCertChainAndNonce', event);
+
+    return () => {
+      AppleWallet.removeEventListener('generatedCertChainAndNonce', event);
+    };
+  });
+
   return (
     <>
       <View style={styles.container}>
@@ -47,15 +59,13 @@ export default function App() {
           }}
           onPress={() => {
             AppleWallet.presentAddPaymentPassViewController({
-              apiEndpoint:
-                'https://e2e.venus.tenx-platform.com/v3/cards/fcde0f94-d599-4945-8df9-0d5dd9e16ec9/wallets/applePay/requests',
+              apiEndpoint: 'https://e2e.venus.tenx-platform.com/v3/cards',
               cardholderName: 'Happy Trails',
               localizedDescription: 'Something here',
               primaryAccountSuffix: '5435',
               primaryAccountIdentifier: '',
-              authorization:
-                'Bearer ffSG7YiItxVU03DmuwuBLdSxCIQ.92OeF3kvoU3xzJKXnBl2u-BIwaE',
-              xApiKey: 'ZfAyosUQIUosKeJAb04HSjeGoLjPEf5a',
+              authorization: 'Bearer XXX',
+              xApiKey: 'XXX',
             });
           }}
         />

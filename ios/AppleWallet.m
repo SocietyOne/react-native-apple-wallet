@@ -38,8 +38,8 @@ RCT_REMAP_METHOD(isAvailable,
 }
 
 RCT_EXPORT_METHOD(canAddCard:(NSString *)cardId
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject) {
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
     resolve(@([self canAddPaymentPassWithPrimaryAccountIdentifier:cardId]));
 }
 
@@ -76,6 +76,27 @@ RCT_EXPORT_METHOD(isCardInWallet:(NSString *)card
     };
 }
 
+RCT_EXPORT_METHOD(getLeafCertificate:(NSString *)card
+                 resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject) {
+    resolve(self.leafCertificate);
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getSubCACertificate)
+{
+    return self.subCACertificate;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getNonce)
+{
+    return self.nonce;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getNonceSignature)
+{
+    return self.nonceSignature;
+}
+
 /*
  React-native expects you to implement this method if you want to do native iOS rendering.
  This will ensure that your native module is run on the main thread
@@ -88,7 +109,7 @@ RCT_EXPORT_METHOD(isCardInWallet:(NSString *)card
 #pragma mark - RCTEventEmitter implementation
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"addingPassSucceeded", @"addingPassFailed", @"addToWalletViewCreationError", @"addToWalletViewShown", @"addToWalletViewHidden"];
+    return @[@"addingPassSucceeded", @"addingPassFailed", @"addToWalletViewCreationError", @"addToWalletViewShown", @"addToWalletViewHidden", @"generatedCertChainAndNonce"];
 }
 
 #pragma mark - PKAddPassesViewController
@@ -106,6 +127,7 @@ RCT_EXPORT_METHOD(presentAddPaymentPassViewController: (NSDictionary *)args
     self.primaryAccountIdentifier = args[@"primaryAccountIdentifier"];
     self.apiEndpoint = args[@"apiEndpoint"];
     self.authorization = args[@"authorization"];
+    self.xApiKey = args[@"xApiKey"];
     
     configuration.cardholderName = self.cardholderName;
     configuration.localizedDescription = self.localizedDescription;
@@ -120,15 +142,15 @@ RCT_EXPORT_METHOD(presentAddPaymentPassViewController: (NSDictionary *)args
             UIApplication *sharedApplication = RCTSharedApplication();
             UIWindow *window = sharedApplication.keyWindow;
             
+            RCTLogInfo(@"before %@", self.nonce);
             if (window) {
                 UIViewController *rootViewController = window.rootViewController;
                 
                 if (rootViewController) {
                     [rootViewController presentViewController:passView animated:YES completion:^{
+                        RCTLogInfo(@"after %@", self.nonce);
                         // Succeeded
-                        [self sendEventWithName:@"addToWalletViewShown" body:@{
-                            @"args" : args
-                        }];
+                        [self sendEventWithName:@"addToWalletViewShown" body:@{@"args" : args}];
                         resolve(nil);
                         return;
                     }];
@@ -145,52 +167,75 @@ RCT_EXPORT_METHOD(presentAddPaymentPassViewController: (NSDictionary *)args
 
 #pragma mark - PKAddPaymentPassViewControllerDelegate
 
-- (void)addPaymentPassViewController:(nonnull PKAddPaymentPassViewController *)controller generateRequestWithCertificateChain:(nonnull NSArray<NSData *> *)certificates nonce:(nonnull NSData *)nonce nonceSignature:(nonnull NSData *)nonceSignature completionHandler:(nonnull void (^)(PKAddPaymentPassRequest * _Nonnull))handler {
-    NSLog(@"[INFO] addPaymentPassViewController 1");
+- (void)addPaymentPassViewController:(nonnull PKAddPaymentPassViewController *)controller
+ generateRequestWithCertificateChain:(nonnull NSArray<NSData *> *)certificates
+                               nonce:(nonnull NSData *)nonce
+                      nonceSignature:(nonnull NSData *)nonceSignature
+                   completionHandler:(nonnull void (^)(PKAddPaymentPassRequest * _Nonnull))handler {
     
-    NSString* leafCertificate = [[certificates objectAtIndex:0] base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn];
-    NSString* subCACertificate = [[certificates objectAtIndex:1] base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn];
+    NSLog(@"[INFO] addPaymentPassViewController 1");
+    RCTLogInfo(@"[INFO] addPaymentPassViewController 1");
+    
+    self.leafCertificate = [[certificates objectAtIndex:0] base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn];
+    self.subCACertificate = [[certificates objectAtIndex:1] base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn];
+    self.nonce = [nonce base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn];
+    self.nonceSignature = [nonceSignature base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn];
+    
+    NSMutableDictionary *args = [[NSMutableDictionary alloc] initWithCapacity:4];
+    [args setObject:self.leafCertificate forKey:@"leafCertificate"];
+    [args setObject:self.subCACertificate forKey:@"subCACertificate"];
+    [args setObject:self.nonce forKey:@"nonce"];
+    [args setObject:self.nonceSignature forKey:@"nonceSignature"];
+    
+    [self sendEventWithName:@"generatedCertChainAndNonce" body:@{@"args" : args}];
     
     NSURL *apiEndpointURL = [NSURL URLWithString:self.apiEndpoint];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:apiEndpointURL];
-    request.HTTPMethod = @"POST";
+    request.HTTPMethod = @"GET";
     request.timeoutInterval = 19.0;
+    
+    RCTLogInfo(@"x-apikey: %@", self.xApiKey);
+    RCTLogInfo(@"authorization: %@", self.authorization);
     
     [request setAllHTTPHeaderFields:@{
         @"content-type" : @"application/json",
+        @"x-apikey": self.xApiKey,
         @"authorization" : self.authorization,
     }];
     
     NSURLSession *session = [NSURLSession sharedSession];
-        NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request
-            completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-
-                NSLog(@"[INFO] addPaymentPassViewController 3");
-                NSLog(@"error: %@", error);
-                NSLog(@"data: %@", data);
-                NSLog(@"response: %@", response);
-
-                NSError *processError = error;
-
-                if (processError == nil && data != nil) {
-                    NSLog(@"No Error?");
-                }
-
-                // This will only be reached if no return above. This means an error occured.
-                handler(nil);
-                if (processError != nil) {
-                    [self sendEventWithName:@"addingPassFailed" body:@{
-                                            @"code" : @([processError code]),
-                                            @"message" : [processError localizedDescription],
-                                            }];
-
-                } else {
-
-                    [self sendEventWithName:@"addingPassFailed" body:nil];
-                }
-            }];
-
-        [dataTask resume];
+    NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request
+                                                completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        
+        RCTLogInfo(@"[INFO] addPaymentPassViewController 3");
+        RCTLogInfo(@"error: %@", error);
+        RCTLogInfo(@"data: %@", data);
+        RCTLogInfo(@"response: %@", response);
+        
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+        RCTLogInfo(@"httpResponse: %@", httpResponse);
+        
+        NSError *processError = error;
+        
+        if (processError == nil && data != nil) {
+            NSLog(@"No Error?");
+        }
+        
+        // This will only be reached if no return above. This means an error occured.
+        //                handler(nil);
+        //                if (processError != nil) {
+        //                    [self sendEventWithName:@"addingPassFailed" body:@{
+        //                                            @"code" : @([processError code]),
+        //                                            @"message" : [processError localizedDescription],
+        //                                            }];
+        //
+        //                } else {
+        //
+        //                    [self sendEventWithName:@"addingPassFailed" body:nil];
+        //                }
+    }];
+    
+    [dataTask resume];
 }
 
 - (void)addPaymentPassViewController:(nonnull PKAddPaymentPassViewController *)controller didFinishAddingPaymentPass:(nullable PKPaymentPass *)pass error:(nullable NSError *)error {
