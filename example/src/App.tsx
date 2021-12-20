@@ -78,13 +78,10 @@ export default function App() {
           }}
           onPress={() => {
             AppleWallet.presentAddPaymentPassViewController({
-              apiEndpoint: 'https://e2e.venus.tenx-platform.com/v3/cards',
               cardholderName: 'Happy Trails',
               localizedDescription: 'Something here',
               primaryAccountSuffix: '5435',
               primaryAccountIdentifier: '',
-              authorization: 'Bearer XXX',
-              xApiKey: 'XXX',
             });
           }}
         />

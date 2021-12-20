@@ -12,9 +12,6 @@
 @property (nonatomic, retain) NSString *paymentNetwork;
 @property (nonatomic, retain) NSString *primaryAccountIdentifier;
 @property (nonatomic, retain) NSString *primaryAccountSuffix;
-@property (nonatomic, retain) NSString *apiEndpoint;
-@property (nonatomic, retain) NSString *authorization;
-@property (nonatomic, retain) NSString *xApiKey;
 @property (nonatomic, retain) NSString *leafCertificate;
 @property (nonatomic, retain) NSString *subCACertificate;
 @property (nonatomic, retain) NSString *nonce;

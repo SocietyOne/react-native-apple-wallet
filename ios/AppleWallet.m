@@ -118,9 +118,6 @@ RCT_EXPORT_METHOD(presentAddPaymentPassViewController: (NSDictionary *)args
     self.paymentNetwork = PKPaymentNetworkMasterCard;
     self.primaryAccountSuffix = args[@"primaryAccountSuffix"];
     self.primaryAccountIdentifier = args[@"primaryAccountIdentifier"];
-    self.apiEndpoint = args[@"apiEndpoint"];
-    self.authorization = args[@"authorization"];
-    self.xApiKey = args[@"xApiKey"];
     
     configuration.cardholderName = self.cardholderName;
     configuration.localizedDescription = self.localizedDescription;
@@ -165,14 +162,15 @@ RCT_EXPORT_METHOD(presentAddPaymentPassViewController: (NSDictionary *)args
                                nonce:(nonnull NSData *)nonce
                       nonceSignature:(nonnull NSData *)nonceSignature
                    completionHandler:(nonnull void (^)(PKAddPaymentPassRequest * _Nonnull))handler {
-    RCTLogInfo(@"addPaymentPassViewController generate cert chain and nonce");
+    RCTLogInfo(@"addPaymentPassViewController delegate to generate cert chain, nonce and nonce signature");
     
     self.addPaymentPassRequestCompletionHandler = handler;
     
-    self.leafCertificate = [[certificates objectAtIndex:0] base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn];
-    self.subCACertificate = [[certificates objectAtIndex:1] base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn];
-    self.nonce = [nonce base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn];
-    self.nonceSignature = [nonceSignature base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn];
+    // the leaf certificate will be the first element of that array and the sub-CA certificate will follow.
+    self.leafCertificate = [[certificates objectAtIndex:0] base64EncodedStringWithOptions:0];
+    self.subCACertificate = [[certificates objectAtIndex:1] base64EncodedStringWithOptions:0];
+    self.nonce = [nonce base64EncodedStringWithOptions:0];
+    self.nonceSignature = [nonceSignature base64EncodedStringWithOptions:0];
     
     NSMutableDictionary *args = [[NSMutableDictionary alloc] initWithCapacity:4];
     [args setObject:self.leafCertificate forKey:@"leafCertificate"];
@@ -180,11 +178,8 @@ RCT_EXPORT_METHOD(presentAddPaymentPassViewController: (NSDictionary *)args
     [args setObject:self.nonce forKey:@"nonce"];
     [args setObject:self.nonceSignature forKey:@"nonceSignature"];
     
+    RCTLogInfo(@"Event send to JS with certs, nonce and nonceSignature");
     [self sendEventWithName:@"generatedCertChainAndNonce" body:@{@"args" : args}];
-    RCTLogInfo(@"Event send with certs, nonce and nonceSignature");
-    
-    [NSThread sleepForTimeInterval:15.0f];
-    RCTLogInfo(@"Slept for 15 seconds");
 }
 
 - (void)addPaymentPassViewController:(nonnull PKAddPaymentPassViewController *)controller didFinishAddingPaymentPass:(nullable PKPaymentPass *)pass error:(nullable NSError *)error {
