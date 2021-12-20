@@ -20,4 +20,7 @@
 @property (nonatomic, retain) NSString *nonce;
 @property (nonatomic, retain) NSString *nonceSignature;
 
+// Reference : https://stackoverflow.com/questions/19171206/save-a-completion-handler-as-an-object
+@property (nonatomic, copy) void (^addPaymentPassRequestCompletionHandler)(PKAddPaymentPassRequest *addPaymentPassRequest);
+
 @end

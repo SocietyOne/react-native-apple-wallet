@@ -6,6 +6,7 @@ import AppleWallet, {
   canAddCard,
   AddPassButton,
   isCardInWallet,
+  sendPaymentPassRequest,
 } from 'react-native-apple-wallet';
 import { useEffect } from 'react';
 
@@ -32,7 +33,25 @@ export default function App() {
 
   useEffect(() => {
     const event = ({ args }: any) => {
-      console.log('YIPEE ', JSON.stringify(args));
+      console.log(
+        'generatedCertChainAndNonce payload : ',
+        JSON.stringify(args)
+      );
+
+      console.log('Call 10x api');
+
+      (async () => {
+        const sendPaymentPassRequestResult = await sendPaymentPassRequest(
+          args.nonce,
+          args.nonceSignature,
+          args.subCACertificate
+        );
+
+        console.log(
+          'sendPaymentPassRequestResult ',
+          sendPaymentPassRequestResult
+        );
+      })();
     };
     AppleWallet.addEventListener('generatedCertChainAndNonce', event);
 

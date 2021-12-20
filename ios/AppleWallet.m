@@ -66,6 +66,20 @@ RCT_EXPORT_METHOD(isCardInWallet:(NSString *)card
     resolve(@NO);
 }
 
+RCT_EXPORT_METHOD(callAddPaymentPassRequestHandler:(NSDictionary *)args
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    PKAddPaymentPassRequest *paymentPassRequest = [[PKAddPaymentPassRequest alloc] init];
+    
+    if (paymentPassRequest != nil) {
+        paymentPassRequest.activationData = [[NSData alloc] initWithBase64EncodedString:args[@"activationData"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
+        paymentPassRequest.encryptedPassData = [[NSData alloc] initWithBase64EncodedString:args[@"encryptedPassData"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
+        paymentPassRequest.ephemeralPublicKey = [[NSData alloc] initWithBase64EncodedString:args[@"ephemeralPublicKey"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    }
+    NSLog(@"in module paymentPassRequest: %@", paymentPassRequest);
+    self.addPaymentPassRequestCompletionHandler(paymentPassRequest);
+}
+
 - (NSDictionary *)constantsToExport {
     PKAddPassButton *addPassButton = [[PKAddPassButton alloc] initWithAddPassButtonStyle:PKAddPassButtonStyleBlack];
     [addPassButton layoutIfNeeded];
@@ -74,27 +88,6 @@ RCT_EXPORT_METHOD(isCardInWallet:(NSString *)card
         @"AddToWalletButtonWidth": @(CGRectGetWidth(addPassButton.frame)),
         @"AddToWalletButtonHeight": @(CGRectGetHeight(addPassButton.frame)),
     };
-}
-
-RCT_EXPORT_METHOD(getLeafCertificate:(NSString *)card
-                 resolve:(RCTPromiseResolveBlock)resolve
-                 reject:(RCTPromiseRejectBlock)reject) {
-    resolve(self.leafCertificate);
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getSubCACertificate)
-{
-    return self.subCACertificate;
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getNonce)
-{
-    return self.nonce;
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getNonceSignature)
-{
-    return self.nonceSignature;
 }
 
 /*
@@ -172,9 +165,9 @@ RCT_EXPORT_METHOD(presentAddPaymentPassViewController: (NSDictionary *)args
                                nonce:(nonnull NSData *)nonce
                       nonceSignature:(nonnull NSData *)nonceSignature
                    completionHandler:(nonnull void (^)(PKAddPaymentPassRequest * _Nonnull))handler {
+    RCTLogInfo(@"addPaymentPassViewController generate cert chain and nonce");
     
-    NSLog(@"[INFO] addPaymentPassViewController 1");
-    RCTLogInfo(@"[INFO] addPaymentPassViewController 1");
+    self.addPaymentPassRequestCompletionHandler = handler;
     
     self.leafCertificate = [[certificates objectAtIndex:0] base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn];
     self.subCACertificate = [[certificates objectAtIndex:1] base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithCarriageReturn];
@@ -188,54 +181,10 @@ RCT_EXPORT_METHOD(presentAddPaymentPassViewController: (NSDictionary *)args
     [args setObject:self.nonceSignature forKey:@"nonceSignature"];
     
     [self sendEventWithName:@"generatedCertChainAndNonce" body:@{@"args" : args}];
+    RCTLogInfo(@"Event send with certs, nonce and nonceSignature");
     
-    NSURL *apiEndpointURL = [NSURL URLWithString:self.apiEndpoint];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:apiEndpointURL];
-    request.HTTPMethod = @"GET";
-    request.timeoutInterval = 19.0;
-    
-    RCTLogInfo(@"x-apikey: %@", self.xApiKey);
-    RCTLogInfo(@"authorization: %@", self.authorization);
-    
-    [request setAllHTTPHeaderFields:@{
-        @"content-type" : @"application/json",
-        @"x-apikey": self.xApiKey,
-        @"authorization" : self.authorization,
-    }];
-    
-    NSURLSession *session = [NSURLSession sharedSession];
-    NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request
-                                                completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        
-        RCTLogInfo(@"[INFO] addPaymentPassViewController 3");
-        RCTLogInfo(@"error: %@", error);
-        RCTLogInfo(@"data: %@", data);
-        RCTLogInfo(@"response: %@", response);
-        
-        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-        RCTLogInfo(@"httpResponse: %@", httpResponse);
-        
-        NSError *processError = error;
-        
-        if (processError == nil && data != nil) {
-            NSLog(@"No Error?");
-        }
-        
-        // This will only be reached if no return above. This means an error occured.
-        //                handler(nil);
-        //                if (processError != nil) {
-        //                    [self sendEventWithName:@"addingPassFailed" body:@{
-        //                                            @"code" : @([processError code]),
-        //                                            @"message" : [processError localizedDescription],
-        //                                            }];
-        //
-        //                } else {
-        //
-        //                    [self sendEventWithName:@"addingPassFailed" body:nil];
-        //                }
-    }];
-    
-    [dataTask resume];
+    [NSThread sleepForTimeInterval:15.0f];
+    RCTLogInfo(@"Slept for 15 seconds");
 }
 
 - (void)addPaymentPassViewController:(nonnull PKAddPaymentPassViewController *)controller didFinishAddingPaymentPass:(nullable PKPaymentPass *)pass error:(nullable NSError *)error {

@@ -81,19 +81,21 @@ export function isCardInWallet(cardId: string): Promise<boolean> {
   return Promise.reject(UNSUPPORTED_PLATFORM_ERROR);
 }
 
-// export function addEventListener(
-//   eventType: string,
-//   listener: (...args: any[]) => void
-// ) {
-//   return nativeEventEmitter.addListener(eventType, listener, null);
-// }
-//
-// export function removeEventListener(
-//   eventType: string,
-//   listener: (...args: any[]) => void
-// ): void {
-//   return nativeEventEmitter.removeListener(eventType, listener);
-// }
+export function sendPaymentPassRequest(
+  activationData: string,
+  ephemeralPublicKey: string,
+  encryptedPassData: string
+): Promise<boolean> {
+  if (isIos()) {
+    return AppleWallet.callAddPaymentPassRequestHandler({
+      activationData: activationData,
+      ephemeralPublicKey: ephemeralPublicKey,
+      encryptedPassData: encryptedPassData,
+    });
+  }
+
+  return Promise.reject(UNSUPPORTED_PLATFORM_ERROR);
+}
 
 export default {
   ...AppleWallet,
