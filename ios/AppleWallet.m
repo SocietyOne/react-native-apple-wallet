@@ -84,9 +84,25 @@ RCT_EXPORT_METHOD(callAddPaymentPassRequestHandler:(NSDictionary *)args
     PKAddPassButton *addPassButton = [[PKAddPassButton alloc] initWithAddPassButtonStyle:PKAddPassButtonStyleBlack];
     [addPassButton layoutIfNeeded];
     
+    PKPaymentButton *paymentButton = [[PKPaymentButton alloc] initWithPaymentButtonType:PKPaymentButtonTypeBuy paymentButtonStyle:PKPaymentButtonStyleBlack];
+    [paymentButton layoutIfNeeded];
+    
     return @{
-        @"AddToWalletButtonWidth": @(CGRectGetWidth(addPassButton.frame)),
-        @"AddToWalletButtonHeight": @(CGRectGetHeight(addPassButton.frame)),
+        @"AddPassButtonWidth": @(CGRectGetWidth(addPassButton.frame)),
+        @"AddPassButtonHeight": @(CGRectGetHeight(addPassButton.frame)),
+        @"PaymentButtonWidth": @(CGRectGetWidth(paymentButton.frame)),
+        @"PaymentButtonHeight": @(CGRectGetHeight(paymentButton.frame)),
+        @"PaymentButtonType": @{
+            @"Plain": @(PKPaymentButtonTypePlain),
+            @"Buy": @(PKPaymentButtonTypeBuy),
+            @"Pay": @(PKPaymentButtonTypeInStore),
+            @"SetUp": @(PKPaymentButtonTypeSetUp),
+        },
+        @"PaymentButtonStyle": @{
+            @"White": @(PKPaymentButtonStyleWhite),
+            @"WhiteOutline": @(PKPaymentButtonStyleWhiteOutline),
+            @"Black": @(PKPaymentButtonStyleBlack),
+        },
     };
 }
 

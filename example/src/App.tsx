@@ -7,6 +7,8 @@ import AppleWallet, {
   AddPassButton,
   isCardInWallet,
   sendPaymentPassRequest,
+  PaymentButtonPlain,
+  PaymentButtonBuy,
 } from 'react-native-apple-wallet';
 import { useEffect } from 'react';
 
@@ -71,10 +73,26 @@ export default function App() {
         <Button title="isCardInWallet" onPress={isCardInWalletOnPress} />
       </View>
       <View style={styles.addToWallet}>
+        <PaymentButtonPlain
+          style={{
+            height: AppleWallet.PaymentButtonHeight,
+            width: AppleWallet.PaymentButtonWidth,
+          }}
+        />
+      </View>
+      <View style={styles.addToWallet}>
+        <PaymentButtonBuy
+          style={{
+            height: AppleWallet.PaymentButtonHeight,
+            width: AppleWallet.PaymentButtonWidth,
+          }}
+        />
+      </View>
+      <View style={styles.addToWallet}>
         <AddPassButton
           style={{
-            height: AppleWallet.AddToWalletButtonHeight,
-            width: AppleWallet.AddToWalletButtonWidth,
+            height: AppleWallet.AddPassButtonHeight,
+            width: AppleWallet.AddPassButtonWidth,
           }}
           onPress={() => {
             AppleWallet.presentAddPaymentPassViewController({

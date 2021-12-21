@@ -18,7 +18,6 @@
                            action:@selector(addPassButtonDidTouchUpInside:)
                  forControlEvents:UIControlEventTouchUpInside];
     [super setFrame:self.addPassButton.frame];
-//    NSLog(@"%@", NSStringFromCGRect(self.addPassButton.frame));
     [self addSubview:self.addPassButton];
   }
   

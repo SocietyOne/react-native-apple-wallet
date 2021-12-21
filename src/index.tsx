@@ -42,6 +42,26 @@ export class AddPassButton extends React.Component<{
   }
 }
 
+const SOPaymentButtonPlain = requireNativeComponent('SOPaymentButtonPlain');
+export class PaymentButtonPlain extends React.Component<{
+  style: ViewStyle;
+  onPress?: () => void;
+}> {
+  render() {
+    return <SOPaymentButtonPlain {...this.props} />;
+  }
+}
+
+const SOPaymentButtonBuy = requireNativeComponent('SOPaymentButtonBuy');
+export class PaymentButtonBuy extends React.Component<{
+  style: ViewStyle;
+  onPress?: () => void;
+}> {
+  render() {
+    return <SOPaymentButtonBuy {...this.props} />;
+  }
+}
+
 function isIos() {
   return Platform.OS === 'ios';
 }

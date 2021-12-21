@@ -20,6 +20,14 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libAppleWallet.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAppleWallet.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		924C7554277197410059A35C /* SOPaymentButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SOPaymentButton.h; sourceTree = "<group>"; };
+		924C7555277197410059A35C /* SOPaymentButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SOPaymentButton.m; sourceTree = "<group>"; };
+		924C7556277197600059A35C /* SOPaymentButtonPlainManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SOPaymentButtonPlainManager.h; sourceTree = "<group>"; };
+		924C7557277197600059A35C /* SOPaymentButtonPlainManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SOPaymentButtonPlainManager.m; sourceTree = "<group>"; };
+		924C755A2771BCAA0059A35C /* RCTConvert+SOAppleWallet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+SOAppleWallet.h"; sourceTree = "<group>"; };
+		924C755B2771BCAA0059A35C /* RCTConvert+SOAppleWallet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+SOAppleWallet.m"; sourceTree = "<group>"; };
+		924C755C2771CC700059A35C /* SOPaymentButtonBuyManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SOPaymentButtonBuyManager.h; sourceTree = "<group>"; };
+		924C755D2771CC700059A35C /* SOPaymentButtonBuyManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SOPaymentButtonBuyManager.m; sourceTree = "<group>"; };
 		92E7E702275EF140007F0096 /* AppleWalletDefinitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppleWalletDefinitions.h; sourceTree = "<group>"; };
 		92E7E70A27606B39007F0096 /* SOAddPassButtonManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SOAddPassButtonManager.h; sourceTree = "<group>"; };
 		92E7E70B27606B39007F0096 /* SOAddPassButtonManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SOAddPassButtonManager.m; sourceTree = "<group>"; };
@@ -51,6 +59,14 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				924C755A2771BCAA0059A35C /* RCTConvert+SOAppleWallet.h */,
+				924C755B2771BCAA0059A35C /* RCTConvert+SOAppleWallet.m */,
+				924C7556277197600059A35C /* SOPaymentButtonPlainManager.h */,
+				924C7557277197600059A35C /* SOPaymentButtonPlainManager.m */,
+				924C755C2771CC700059A35C /* SOPaymentButtonBuyManager.h */,
+				924C755D2771CC700059A35C /* SOPaymentButtonBuyManager.m */,
+				924C7554277197410059A35C /* SOPaymentButton.h */,
+				924C7555277197410059A35C /* SOPaymentButton.m */,
 				92E7E70D27606B73007F0096 /* SOAddPassButtonContainer.h */,
 				92E7E70E27606B73007F0096 /* SOAddPassButtonContainer.m */,
 				92E7E70A27606B39007F0096 /* SOAddPassButtonManager.h */,
