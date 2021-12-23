@@ -11,6 +11,7 @@ import AppleWallet, {
   PaymentButtonBuy,
 } from 'react-native-apple-wallet';
 import { useEffect } from 'react';
+import testPaymentPassRequestData from './testPaymentPassRequestData.json';
 
 export default function App() {
   const isAvailableOnPress = async () => {
@@ -40,13 +41,13 @@ export default function App() {
         JSON.stringify(args)
       );
 
-      console.log('Call 10x api');
+      console.log('Call 10x api ', testPaymentPassRequestData);
 
       (async () => {
         const sendPaymentPassRequestResult = await sendPaymentPassRequest(
-          args.nonce,
-          args.nonceSignature,
-          args.subCACertificate
+          testPaymentPassRequestData.activationData,
+          testPaymentPassRequestData.ephemeralPublicKey,
+          testPaymentPassRequestData.encryptedData
         );
 
         console.log(
