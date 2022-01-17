@@ -71,28 +71,26 @@ RCT_EXPORT_METHOD(callAddPaymentPassRequestHandler:(NSDictionary *)args
                   reject:(RCTPromiseRejectBlock)reject) {
     PKAddPaymentPassRequest *paymentPassRequest = [[PKAddPaymentPassRequest alloc] init];
     RCTLogInfo(@"In callAddPaymentPassRequestHandler:");
-    RCTLogInfo(@"activationData %@", args[@"activationData"]);
-    RCTLogInfo(@"encryptedPassData %@", args[@"encryptedPassData"]);
-    RCTLogInfo(@"ephemeralPublicKey %@", args[@"ephemeralPublicKey"]);
     
     if (paymentPassRequest != nil) {
-        //        paymentPassRequest.activationData = [[NSData alloc] initWithBase64EncodedString:args[@"activationData"] options:0];
-        //        paymentPassRequest.encryptedPassData = [[NSData alloc] initWithBase64EncodedString:args[@"encryptedPassData"] options:0];
-        //        paymentPassRequest.ephemeralPublicKey = [[NSData alloc] initWithBase64EncodedString:args[@"ephemeralPublicKey"] options:0];
+        // NSData from the Base64 encoded str
+        NSData *nsdataFromActivationData = [[NSData alloc] initWithBase64EncodedString:args[@"activationData"] options:0];
         
-        paymentPassRequest.activationData = args[@"activationData"];
-        paymentPassRequest.encryptedPassData = args[@"encryptedPassData"];
-        paymentPassRequest.ephemeralPublicKey = args[@"ephemeralPublicKey"];
+        // Decoded NSString from the NSData
+        NSString *base64DecodedActivationData = [[NSString alloc] initWithData:nsdataFromActivationData encoding:NSUTF8StringEncoding];
+        
+        // We need to provided Base64 decoded NSData to activationData but needs to provide Base64 encoded NSData to other two
+        paymentPassRequest.activationData = [base64DecodedActivationData dataUsingEncoding:NSUTF8StringEncoding];
+        paymentPassRequest.encryptedPassData = [[NSData alloc] initWithBase64EncodedString:args[@"encryptedPassData"] options:0];
+        paymentPassRequest.ephemeralPublicKey = [[NSData alloc] initWithBase64EncodedString:args[@"ephemeralPublicKey"] options:0];
     }
-    RCTLogInfo(@"in module paymentPassRequest: %@", paymentPassRequest);
-    
+
     if (self.addPaymentPassRequestCompletionHandler != nil) {
         RCTLogInfo(@"Invoking completion handler");
         self.addPaymentPassRequestCompletionHandler(paymentPassRequest);
     } else {
         RCTLogInfo(@"Completion handler was not set");
     }
-    
 }
 
 - (NSDictionary *)constantsToExport {
@@ -148,14 +146,14 @@ RCT_EXPORT_METHOD(presentAddPaymentPassViewController: (NSDictionary *)args
     self.localizedDescription = args[@"localizedDescription"];
     self.paymentNetwork = PKPaymentNetworkMasterCard;
     self.primaryAccountSuffix = args[@"primaryAccountSuffix"];
-//    self.primaryAccountIdentifier = args[@"primaryAccountIdentifier"];
-    
+    self.primaryAccountIdentifier = args[@"primaryAccountIdentifier"];
+
     configuration.cardholderName = self.cardholderName;
-//    configuration.localizedDescription = self.localizedDescription;
-//    configuration.paymentNetwork = self.paymentNetwork;
+    configuration.localizedDescription = self.localizedDescription;
+    configuration.paymentNetwork = self.paymentNetwork;
     configuration.primaryAccountSuffix = self.primaryAccountSuffix;
-//    configuration.primaryAccountIdentifier = self.primaryAccountIdentifier;
-    
+    configuration.primaryAccountIdentifier = self.primaryAccountIdentifier;
+
     PKAddPaymentPassViewController *passView = [[PKAddPaymentPassViewController alloc] initWithRequestConfiguration:configuration
                                                                                                            delegate:self];
     if (passView != nil) {
@@ -163,13 +161,11 @@ RCT_EXPORT_METHOD(presentAddPaymentPassViewController: (NSDictionary *)args
             UIApplication *sharedApplication = RCTSharedApplication();
             UIWindow *window = sharedApplication.keyWindow;
             
-            RCTLogInfo(@"before %@", self.nonce);
             if (window) {
                 UIViewController *rootViewController = window.rootViewController;
                 
                 if (rootViewController) {
                     [rootViewController presentViewController:passView animated:YES completion:^{
-                        RCTLogInfo(@"after %@", self.nonce);
                         // Succeeded
                         [self sendEventWithName:@"addToWalletViewShown" body:@{@"args" : args}];
                         resolve(nil);
