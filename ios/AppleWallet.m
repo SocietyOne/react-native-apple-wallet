@@ -70,7 +70,6 @@ RCT_EXPORT_METHOD(callAddPaymentPassRequestHandler:(NSDictionary *)args
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
     PKAddPaymentPassRequest *paymentPassRequest = [[PKAddPaymentPassRequest alloc] init];
-    RCTLogInfo(@"In callAddPaymentPassRequestHandler:");
     
     if (paymentPassRequest != nil) {
         // NSData from the Base64 encoded str
@@ -89,7 +88,8 @@ RCT_EXPORT_METHOD(callAddPaymentPassRequestHandler:(NSDictionary *)args
         RCTLogInfo(@"Invoking completion handler");
         self.addPaymentPassRequestCompletionHandler(paymentPassRequest);
     } else {
-        RCTLogInfo(@"Completion handler was not set");
+        RCTLogInfo(@"Error : Completion handler was not set");
+        reject(@"Completion handler was not set", @"AddPaymentPassRequestCompletionHandler was not set", nil);
     }
 }
 
