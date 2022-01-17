@@ -85,8 +85,8 @@ RCT_EXPORT_METHOD(callAddPaymentPassRequestHandler:(NSDictionary *)args
     }
 
     if (self.addPaymentPassRequestCompletionHandler != nil) {
-        RCTLogInfo(@"Invoking completion handler");
         self.addPaymentPassRequestCompletionHandler(paymentPassRequest);
+        resolve(@YES);
     } else {
         RCTLogInfo(@"Error : Completion handler was not set");
         reject(@"Completion handler was not set", @"AddPaymentPassRequestCompletionHandler was not set", nil);
