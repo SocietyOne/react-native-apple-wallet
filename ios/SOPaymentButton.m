@@ -11,31 +11,36 @@
 @implementation SOPaymentButton
 
 - (instancetype)initWithPaymentButtonType:(PKPaymentButtonType)type andStyle:(PKPaymentButtonStyle)style {
-  if (self = [super init]) {
-    self.paymentButton = [[PKPaymentButton alloc] initWithPaymentButtonType:type paymentButtonStyle:style];
-    self.paymentButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.paymentButton addTarget:self
-                           action:@selector(addPaymentButtonDidTouchUpInside:)
-                 forControlEvents:UIControlEventTouchUpInside];
-    [super setFrame:self.paymentButton.frame];
-    [self addSubview:self.paymentButton];
-  }
-  
-  return self;
+    if (self = [super init]) {
+        self.paymentButton = [[PKPaymentButton alloc] initWithPaymentButtonType:type paymentButtonStyle:style];
+        self.paymentButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [self.paymentButton addTarget:self
+                               action:@selector(addPaymentButtonDidTouchUpInside:)
+                     forControlEvents:UIControlEventTouchUpInside];
+
+        if (@available(iOS 12.0, *)) {
+            self.paymentButton.cornerRadius = 8.0;
+        }
+
+        [super setFrame:self.paymentButton.frame];
+        [self addSubview:self.paymentButton];
+    }
+    
+    return self;
 }
 
 // FIXME: Doesn't work as we need to UIAppearance property on PKPaymentButton for this to work
 - (PKPaymentButtonStyle)paymentButtonStyle {
-  if (self.paymentButton != nil) {
-    return self.paymentButtonStyle;
-  }
-  return PKPaymentButtonStyleBlack;
+    if (self.paymentButton != nil) {
+        return self.paymentButtonStyle;
+    }
+    return PKPaymentButtonStyleBlack;
 }
 
 - (void)addPaymentButtonDidTouchUpInside:(id)sender {
-   if (self.onPress) {
-     self.onPress(@{});
-   }
+    if (self.onPress) {
+        self.onPress(@{});
+    }
 }
 
 @end

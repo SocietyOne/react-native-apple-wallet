@@ -15,10 +15,8 @@
 
 RCT_EXPORT_MODULE()
 
-// FIXME: Doesn't work as we need to UIAppearance property on PKPaymentButton for this to work. Have two managers that init different variations of PKPaymentButton for now.
-//RCT_CUSTOM_VIEW_PROPERTY(paymentButtonStyle, PKPaymentButtonStyle, SOPaymentButton) {
-//    view.paymentButtonStyle = json ? [RCTConvert PKPaymentButtonStyle:json] : defaultView.paymentButtonStyle;
-//}
+// NOTE: We can't use UIAppearance property on PKPaymentButton (like we do AddPassButton).
+// Have to have two managers that init different variations of PKPaymentButton for now.
 
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 

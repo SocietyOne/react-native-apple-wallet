@@ -79,7 +79,7 @@ export default function App() {
         <PaymentButtonPlain
           style={{
             height: AppleWallet.PaymentButtonHeight,
-            width: AppleWallet.PaymentButtonWidth,
+            width: AppleWallet.PaymentButtonPlainWidth,
           }}
         />
       </View>
@@ -87,7 +87,7 @@ export default function App() {
         <PaymentButtonBuy
           style={{
             height: AppleWallet.PaymentButtonHeight,
-            width: AppleWallet.PaymentButtonWidth,
+            width: AppleWallet.PaymentButtonBuyWidth,
           }}
         />
       </View>
