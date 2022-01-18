@@ -62,6 +62,13 @@ export class PaymentButtonBuy extends React.Component<{
   }
 }
 
+export interface GetPaymentPassInfo {
+  leafCertificate: string;
+  subCACertificate: string;
+  nonce: string;
+  nonceSignature: string;
+}
+
 function isIos() {
   return Platform.OS === 'ios';
 }
@@ -111,6 +118,24 @@ export function sendPaymentPassRequest(
       activationData: activationData,
       ephemeralPublicKey: ephemeralPublicKey,
       encryptedPassData: encryptedPassData,
+    });
+  }
+
+  return Promise.reject(UNSUPPORTED_PLATFORM_ERROR);
+}
+
+export function showAddPaymentPassUI(
+  cardholderName: string,
+  localizedDescription: string,
+  primaryAccountSuffix: string,
+  cardId: string
+): Promise<boolean> {
+  if (isIos()) {
+    return AppleWallet.presentAddPaymentPassViewController({
+      cardholderName: cardholderName,
+      localizedDescription: localizedDescription,
+      primaryAccountSuffix: primaryAccountSuffix,
+      primaryAccountIdentifier: cardId,
     });
   }
 

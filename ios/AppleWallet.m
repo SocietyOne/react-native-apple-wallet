@@ -131,7 +131,7 @@ RCT_EXPORT_METHOD(callAddPaymentPassRequestHandler:(NSDictionary *)args
 #pragma mark - RCTEventEmitter implementation
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"addingPassSucceeded", @"addingPassFailed", @"addToWalletViewCreationError", @"addToWalletViewShown", @"addToWalletViewHidden", @"generatedCertChainAndNonce"];
+    return @[@"addingPassSucceeded", @"addingPassFailed", @"addToWalletViewCreationError", @"addToWalletViewShown", @"addToWalletViewHidden", @"getPaymentPassInfo"];
 }
 
 #pragma mark - PKAddPassesViewController
@@ -206,7 +206,7 @@ RCT_EXPORT_METHOD(presentAddPaymentPassViewController: (NSDictionary *)args
     [args setObject:self.nonceSignature forKey:@"nonceSignature"];
     
     RCTLogInfo(@"Event send to JS with certs, nonce and nonceSignature");
-    [self sendEventWithName:@"generatedCertChainAndNonce" body:@{@"args" : args}];
+    [self sendEventWithName:@"getPaymentPassInfo" body:@{@"args" : args}];
 }
 
 - (void)addPaymentPassViewController:(nonnull PKAddPaymentPassViewController *)controller didFinishAddingPaymentPass:(nullable PKPaymentPass *)pass error:(nullable NSError *)error {

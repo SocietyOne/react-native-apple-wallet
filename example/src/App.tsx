@@ -9,6 +9,8 @@ import AppleWallet, {
   sendPaymentPassRequest,
   PaymentButtonPlain,
   PaymentButtonBuy,
+  showAddPaymentPassUI,
+  GetPaymentPassInfo,
 } from 'react-native-apple-wallet';
 import { useEffect } from 'react';
 import testPaymentPassRequestData from './testPaymentPassRequestData.json';
@@ -35,7 +37,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    const event = ({ args }: any) => {
+    const event = (args: GetPaymentPassInfo) => {
       console.log(
         'generatedCertChainAndNonce payload : ',
         JSON.stringify(args)
@@ -56,10 +58,10 @@ export default function App() {
         );
       })();
     };
-    AppleWallet.addEventListener('generatedCertChainAndNonce', event);
+    AppleWallet.addEventListener('getPaymentPassInfo', event);
 
     return () => {
-      AppleWallet.removeEventListener('generatedCertChainAndNonce', event);
+      AppleWallet.removeEventListener('getPaymentPassInfo', event);
     };
   });
 
@@ -95,13 +97,13 @@ export default function App() {
             height: AppleWallet.AddPassButtonHeight,
             width: AppleWallet.AddPassButtonWidth,
           }}
-          onPress={() => {
-            AppleWallet.presentAddPaymentPassViewController({
-              cardholderName: 'Happy Trails',
-              localizedDescription: 'Something here',
-              primaryAccountSuffix: '5435',
-              primaryAccountIdentifier: '',
-            });
+          onPress={async () => {
+            await showAddPaymentPassUI(
+              'Happy Trails',
+              'Something here',
+              '5435',
+              '12312312312312'
+            );
           }}
         />
       </View>
