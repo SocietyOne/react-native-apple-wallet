@@ -37,7 +37,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    const event = (args: GetPaymentPassInfo) => {
+    const event = ({ args }: GetPaymentPassInfo) => {
       console.log(
         'generatedCertChainAndNonce payload : ',
         JSON.stringify(args)

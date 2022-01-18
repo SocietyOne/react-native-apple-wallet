@@ -63,10 +63,12 @@ export class PaymentButtonBuy extends React.Component<{
 }
 
 export interface GetPaymentPassInfo {
-  leafCertificate: string;
-  subCACertificate: string;
-  nonce: string;
-  nonceSignature: string;
+  args: {
+    leafCertificate: string;
+    subCACertificate: string;
+    nonce: string;
+    nonceSignature: string;
+  };
 }
 
 function isIos() {
