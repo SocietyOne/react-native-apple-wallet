@@ -11,6 +11,7 @@ import AppleWallet, {
   PaymentButtonBuy,
   showAddPaymentPassUI,
   GetPaymentPassInfo,
+  dismissAddPaymentUI,
 } from 'react-native-apple-wallet';
 import { useEffect } from 'react';
 import testPaymentPassRequestData from './testPaymentPassRequestData.json';
@@ -64,6 +65,18 @@ export default function App() {
       AppleWallet.removeEventListener('getPaymentPassInfo', event);
     };
   });
+
+  useEffect(() => {
+    setTimeout(() => {
+      (async () => {
+        try {
+          await dismissAddPaymentUI();
+        } catch (error) {
+          console.log("Dismiss add payment ui reject. But we don't care");
+        }
+      })();
+    }, 5000);
+  }, []);
 
   return (
     <>

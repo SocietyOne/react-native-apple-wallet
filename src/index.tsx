@@ -144,6 +144,14 @@ export function showAddPaymentPassUI(
   return Promise.reject(UNSUPPORTED_PLATFORM_ERROR);
 }
 
+export function dismissAddPaymentUI(): Promise<boolean> {
+  if (isIos()) {
+    return AppleWallet.dismissAddPaymentPassViewController();
+  }
+
+  return Promise.reject(UNSUPPORTED_PLATFORM_ERROR);
+}
+
 export default {
   ...AppleWallet,
 
