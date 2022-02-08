@@ -21,6 +21,8 @@
         if (@available(iOS 12.0, *)) {
             self.paymentButton.cornerRadius = 8.0;
         }
+        
+        [self.paymentButton setUserInteractionEnabled:NO];
 
         [super setFrame:self.paymentButton.frame];
         [self addSubview:self.paymentButton];
